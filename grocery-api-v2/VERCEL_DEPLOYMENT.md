@@ -25,7 +25,9 @@ Import the Git repository into Vercel and set the project Root Directory to the 
 grocery-api-v2
 ```
 
-Set **Settings → Build and Deployment → Root Directory** to `grocery-api-v2`, not the repository root. The committed `framework: null` selects the `Other` preset and `buildCommand: null` prevents Vercel from running the backend's unused Vite build. `vercel.json` provides the function runtime and sends every request through `api/index.php`.
+Set **Settings → Build and Deployment → Root Directory** to `grocery-api-v2`, not the repository root. The committed configuration selects the `Other` preset, disables the backend's unused Vite build, and clears any static Output Directory such as `dist`. `vercel.json` provides the function runtime and sends every request through `api/index.php`.
+
+In the Vercel dashboard, leave **Build Command** and **Output Directory** blank. If this project was previously configured as Vue/Vite, remove the old `dist` Output Directory before redeploying.
 
 ## 2. Configure production environment variables
 
