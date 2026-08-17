@@ -25,7 +25,7 @@ Import the Git repository into Vercel and set the project Root Directory to the 
 grocery-api-v2
 ```
 
-Use the `Other` framework preset. `vercel.json` provides the function runtime and sends every request through `api/index.php`.
+Set **Settings → Build and Deployment → Root Directory** to `grocery-api-v2`, not the repository root. The committed `framework: null` selects the `Other` preset and `buildCommand: null` prevents Vercel from running the backend's unused Vite build. `vercel.json` provides the function runtime and sends every request through `api/index.php`.
 
 ## 2. Configure production environment variables
 
@@ -63,6 +63,8 @@ LOG_CHANNEL=stderr
 Use custom domains on the same root domain, such as `app.example.com` and `api.example.com`. This lets the browser treat Sanctum's secure cookie as same-site. Separate `*.vercel.app` projects are different sites and may be blocked by browser third-party-cookie policies.
 
 Set SMTP credentials in Vercel so verification and password-reset notifications can be delivered. Because the Vercel-only configuration uses the synchronous queue driver, these messages are sent during the request and do not need `queue:work`.
+
+For Gmail on port 587, use `MAIL_SCHEME=smtp`; Symfony Mailer will negotiate TLS automatically. Use a Google app password, not the normal account password. If an app password is ever exposed, revoke it immediately and create a replacement.
 
 ## 3. Migrate the managed database
 
