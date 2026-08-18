@@ -11,6 +11,7 @@ References:
 ## Architecture requirements
 
 - Use a managed MySQL or PostgreSQL database. A local database cannot be reached from Vercel.
+- For TiDB Cloud, set `MYSQL_ATTR_SSL_CA=/etc/pki/tls/certs/ca-bundle.crt` so PDO uses the Amazon Linux system CA bundle required for TLS.
 - Keep `SESSION_DRIVER=database` so Sanctum sessions survive between serverless invocations.
 - Keep `CACHE_STORE=database` so authentication rate limits are shared across instances.
 - Use `QUEUE_CONNECTION=sync` when Vercel is the only backend host. Vercel does not provide a continuously running Laravel queue worker. For asynchronous queues, deploy a separate worker elsewhere and use Redis, SQS, or another supported queue.
@@ -25,13 +26,15 @@ Import the Git repository into Vercel and set the project Root Directory to the 
 grocery-api-v2
 ```
 
-Set **Settings → Build and Deployment → Root Directory** to `grocery-api-v2`, not the repository root. The committed configuration selects the `Other` preset, disables the backend's unused Vite build, and clears any static Output Directory such as `dist`. `vercel.json` provides the function runtime and sends every request through `api/index.php`.
+Set **Settings → Build and Deployment → Root Directory** to `grocery-api-v2`, not the repository root. The committed configuration selects the `Other` preset, disables the backend's unused Vite build, and explicitly uses Laravel's `public` directory instead of a Vite `dist` directory. `vercel.json` provides the function runtime and sends every request through `api/index.php`.
 
 In the Vercel dashboard, leave **Build Command** and **Output Directory** blank. If this project was previously configured as Vue/Vite, remove the old `dist` Output Directory before redeploying.
 
 ## 2. Configure production environment variables
 
 Copy the names from `vercel.env.example` into the Vercel project's Production environment and replace every placeholder. Never upload the local `.env` file.
+
+Do not create variables with blank values. Vercel displays even an empty value as `Encrypted`; Laravel then treats values such as `CACHE_STORE=` and `DB_CONNECTION=` as explicit empty configuration and fails at runtime. Pull the environment locally and verify value presence when diagnosing a deployment, but never print or commit the downloaded secrets.
 
 Generate a dedicated production key:
 
